@@ -1,0 +1,35 @@
+<div class="w-full min-h-screen flex flex-col items-center p-6 bg-gray-50">
+  <!-- Header -->
+  <h1 class="text-3xl font-bold text-gray-800 mb-6 font-serif">
+    All Notifications
+  </h1>
+
+  <!-- Notifications Container -->
+  <div class="w-full max-w-5xl grid gap-6">
+    <ng-container *ngFor="let message of messages">
+      <div class="bg-white shadow-sm p-6 rounded-lg border border-dashed border-gray-300">
+        <!-- Header with timestamp and sender/receiver -->
+        <div class="flex flex-wrap justify-between items-center mb-4">
+          <!-- Sender/Receiver info -->
+          <div class="font-serif text-sm text-gray-700">
+            <span class="font-medium text-gray-800">From:</span> {{ message?.sender }}
+            <span class="mx-2 text-gray-500">→</span>
+            <span class="font-medium text-gray-800">To:</span> {{ message?.receiver }}
+          </div>
+
+          <!-- Timestamp -->
+          <div class="italic font-serif text-sm text-gray-500 mt-2 sm:mt-0">
+            {{ message?.timestamp | date:'medium' }}
+          </div>
+        </div>
+
+        <!-- Message content -->
+        <div class="bg-gray-50 p-4 rounded-md border-2 border-dashed">
+          <p class="font-medium font-serif text-green-700 leading-relaxed">
+            {{ message?.content }}
+          </p>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
