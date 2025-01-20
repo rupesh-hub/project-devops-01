@@ -53,7 +53,7 @@ jobs:
       - name: Add ssh key
         uses: webfactory/ssh-agent@v0.5.3
         with:
-          ssh-private-key: ${{ secrets.AWS_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
 
       - name: Create deployment folder
         run: ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} "mkdir -p ci-cd"
@@ -70,4 +70,4 @@ jobs:
           EOF
 
 # sudo apt-get install docker.io
-# sudo usermod -aG docker $USER && negrp docker
+# sudo usermod -aG docker $USER && newgrp docker

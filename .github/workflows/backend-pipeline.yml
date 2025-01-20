@@ -126,7 +126,7 @@ jobs:
     needs: [build-image]
     name: Deploy to aws
     steps:
-      - name: Add ssh key
+      - name: Add ssh key of aws
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
