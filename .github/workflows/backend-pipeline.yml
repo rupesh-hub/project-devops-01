@@ -121,26 +121,75 @@ jobs:
             PROFILE=dev
             API_VERSION=${{ steps.extract_version.outputs.VERSION }}
 
+#  deploy:
+#    runs-on: self-hosted
+#    needs: [build-image]
+#    name: Deploy to aws
+#    steps:
+#      - name: Add ssh key
+#        uses: webfactory/ssh-agent@v0.5.3
+#        with:
+#          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+#
+#      - name: Create deployment folder
+#        run: ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} "mkdir -p ci-cd"
+#
+#      - name: Copy compose file
+#        run: scp docker-compose.yml ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }}:ci-cd/docker-compose.yml
+#
+#      - name: Set ENV variable and deploy
+#        run: |
+#          ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} <<EOF
+#            cd ci-cd
+#            docker-compose -f docker-compose.yml pull -q
+#            docker-compose -f docker-compose.yml up -d
+#          EOF
+
+
   deploy:
     runs-on: self-hosted
-    needs: [build-image]
-    name: Deploy to aws
+    needs: [ build-image ]
+    name: Deploy to Kubernetes
     steps:
-      - name: Add ssh key
-        uses: webfactory/ssh-agent@v0.5.3
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
-          ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
+          fetch-depth: 0
 
-      - name: Create deployment folder
-        run: ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} "mkdir -p ci-cd"
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
 
-      - name: Copy compose file
-        run: scp docker-compose.yml ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }}:ci-cd/docker-compose.yml
+#      - name: Set up kubeconfig
+#        env:
+#          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+#        run: |
+#          echo "${{ secrets.KUBECONFIG_CONTENT }}" > $KUBECONFIG
 
-      - name: Set ENV variable and deploy
+      - name: Apply namespace
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} <<EOF
-            cd ci-cd
-            docker-compose -f docker-compose.yml pull -q
-            docker-compose -f docker-compose.yml up -d
-          EOF
+          kubectl apply -f deployment/namespace.yml
+
+      - name: Apply configmap
+        run: |
+          kubectl apply -f deployment/configmap.yml
+
+      - name: Apply secrets
+        run: |
+          kubectl apply -f deployment/secrets.yml
+
+      - name: Apply MySQL resources
+        run: |
+          kubectl apply -f deployment/mysql-deployment.yml
+          kubectl apply -f deployment/mysql-service.yml
+
+      - name: Apply backend resources
+        run: |
+          kubectl apply -f deployment/backend-deployment.yml
+          kubectl apply -f deployment/backend-service.yml
+
+      - name: Apply frontend resources
+        run: |
+          kubectl apply -f deployment/frontend-deployment.yml
+          kubectl apply -f deployment/frontend-service.yml
