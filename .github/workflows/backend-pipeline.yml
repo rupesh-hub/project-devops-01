@@ -132,7 +132,7 @@ jobs:
           ssh-private-key: ${{ secrets.AWS_SSH_KEY }}
 
       - name: Create deployment folder
-        run: ssh ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} "mkdir -p ci-cd -y"
+        run: ssh -o ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }} "mkdir -p ci-cd"
 
       - name: Copy compose file
         run: scp docker-compose.yml ${{ secrets.AWS_USERNAME }}@${{ secrets.AWS_IP }}:ci-cd/docker-compose.yml
