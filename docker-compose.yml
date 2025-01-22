@@ -34,7 +34,7 @@ services:
 
   frontend:
     container_name: frontend
-    image: rupesh1997/frontend:1.0.0
+    image: rupesh1997/frontend:latest
     ports:
       - "8080:80"
     networks:
