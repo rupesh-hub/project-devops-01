@@ -14,12 +14,12 @@ services:
     networks:
       - devops
     restart: always
-    healthcheck:
-        test: [ “CMD”, “mysqladmin”, “ping”, “-h”, “localhost”, “-uroot”, “-proot” ]
-        interval: 10s
-        timeout: 5s
-        retries: 5
-        start_period: 60s
+#    healthcheck:
+#        test: [ “CMD”, “mysqladmin”, “ping”, “-h”, “localhost”, “-uroot”, “-proot” ]
+#        interval: 10s
+#        timeout: 5s
+#        retries: 5
+#        start_period: 60s
 
   backend:
     container_name: backend
